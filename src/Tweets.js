@@ -1,27 +1,12 @@
-import React from 'react';
-import { Card } from 'react-bootstrap';
-import './Tweets.css';
+import React from "react";
+import { Tweet } from "./Tweet";
 
-
-function Tweets() {
-  return <div className="tweets">
-    <Card className="tweet">
-      <Card.Header>Javvad</Card.Header>
-      <Card.Body>
-        <Card.Text>
-          Hello Javvad
-          </Card.Text>
-      </Card.Body>
-    </Card>
-    <Card>
-      <Card.Header>Javvad</Card.Header>
-      <Card.Body>
-        <Card.Text>
-          Hello Javvad
-          </Card.Text>
-      </Card.Body>
-    </Card>
-  </div>
+function Tweets(props) {
+  const tweetsHtml = [];
+  for (var i = 0; i < props.tweets.length; i++) {
+    tweetsHtml.push(<Tweet author={props.tweets[i].author} tweet={props.tweets[i].tweet} />);
+  }
+  return <div className="tweets">{tweetsHtml}</div>;
 }
 
-export default Tweets
+export default Tweets;
