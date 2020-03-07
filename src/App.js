@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Container, Form } from "react-bootstrap";
+import { Spinner, Button, Container, Form } from "react-bootstrap";
 import Tweets from "./Tweets";
 import Header from "./Header";
 
@@ -7,14 +7,18 @@ class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      tweets: [
-        { tweet: "Hello Javvad", author: "Javvad" },
-        { tweet: "Hello Javvad 2", author: "Sattar" },
-        { tweet: "Hello Javvad 3", author: "Addu" }
-      ],
+      loading: true,
+      tweets: [],
       newTweet: "",
-      canSubmit: false
+      canSubmit: false,
+      creatingTweet: false
     };
+  }
+
+  componentDidMount() {
+    fetch("/api/tweets")
+      .then(res => res.json())
+      .then(tweets => this.setState({ tweets: tweets, loading: false }));
   }
 
   render() {
@@ -26,16 +30,27 @@ class App extends React.Component {
             className="mt-3"
             onSubmit={e => {
               e.preventDefault();
-              this.setState({
-                tweets: [
-                  {
-                    author: "Javvad",
-                    tweet: this.state.newTweet
-                  }
-                ].concat(this.state.tweets),
-                newTweet: "",
-                canSubmit: false
-              });
+              const newTweet = {
+                author: "Javvad",
+                tweet: this.state.newTweet
+              };
+              this.setState({ creatingTweet: true });
+              fetch("/api/tweets", {
+                method: "post",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify(newTweet)
+              })
+                .then(res => res.json())
+                .then(createdTweet => {
+                  this.setState({
+                    tweets: [createdTweet].concat(this.state.tweets),
+                    newTweet: "",
+                    canSubmit: false,
+                    creatingTweet: false
+                  });
+                });
             }}
           >
             <Form.Group controlId="newTweet">
@@ -57,12 +72,20 @@ class App extends React.Component {
             <Button
               variant="primary"
               type="submit"
-              disabled={!this.state.canSubmit}
+              disabled={!this.state.canSubmit || this.state.creatingTweet}
             >
-              Submit
+              {this.state.creatingTweet ? (
+                <Spinner animation="border" />
+              ) : (
+                "Submit"
+              )}
             </Button>
           </Form>
-          <Tweets tweets={this.state.tweets} />
+          {this.state.loading ? (
+            <Spinner animation="border" />
+          ) : (
+            <Tweets tweets={this.state.tweets} />
+          )}
         </Container>
       </div>
     );
