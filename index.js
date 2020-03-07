@@ -7,6 +7,7 @@ const connectionString =
   "postgresql://postgres:postgres@localhost:5432/twitter";
 
 const app = express();
+app.use(express.static('client/build'))
 app.use(bodyParser.json());
 
 const pool = new Pool({ connectionString });
