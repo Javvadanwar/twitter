@@ -15,7 +15,7 @@ const pool = new Pool({ connectionString });
 const router = new Router();
 
 router.get("/api/tweets", async (req, res) => {
-  const { rows } = await pool.query("SELECT * FROM tweets ORDER BY id DESC");
+  const { rows } = await pool.query(`SELECT * FROM tweets ORDER BY "createdAt" DESC`);
   res.json(rows);
 });
 
